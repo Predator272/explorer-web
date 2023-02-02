@@ -43,16 +43,17 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '<action>' => 'site/<action>',
             ],
         ],
-        */
     ],
     'params' => $params,
+    'name' => 'Explorer.ru',
+    'language' => 'ru',
 ];
 
 if (YII_ENV_DEV) {
