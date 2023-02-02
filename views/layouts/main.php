@@ -15,6 +15,7 @@ AppAsset::register($this);
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" class="h-100">
+
 <head>
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -22,60 +23,57 @@ AppAsset::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
+
 <body class="d-flex flex-column h-100">
-<?php $this->beginBody() ?>
+    <?php $this->beginBody() ?>
 
-<header>
-    <?php
-    NavBar::begin([
-        'brandLabel' => Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
-        'options' => [
-            'class' => 'navbar navbar-expand-md navbar-dark bg-dark fixed-top',
-        ],
-    ]);
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
-    ]);
-    NavBar::end();
-    ?>
-</header>
+    <header>
+        <?php
+        NavBar::begin([
+            'brandLabel' => Html::img(['/favicon.ico'], ['class' => 'mr-2', 'width' => 24, 'height' => 24]) . Yii::$app->name,
+            'brandUrl' => Yii::$app->homeUrl,
+            'brandOptions' => ['class' => 'd-flex align-items-center'],
+            'options' => [
+                'class' => 'navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top',
+            ],
+        ]);
+        echo Nav::widget([
+            'options' => ['class' => 'navbar-nav ml-auto'],
+            'items' => [
+                ['label' => 'Главная', 'url' => Yii::$app->homeUrl],
+                ['label' => 'Вход', 'url' => ['/site/signin'], 'visible' => Yii::$app->user->isGuest == true],
+                ['label' => 'Регистрация', 'url' => ['/site/signup'], 'visible' => Yii::$app->user->isGuest == true],
+                [
+                    'label' => Yii::$app->user->identity->login,
+                    'items' => [
+                        ['label' => 'Профиль', 'url' => ['/site/profile']],
+                        ['label' => 'Выход', 'url' => ['/site/signout'], 'linkOptions' => ['data' => ['method' => 'POST']]],
+                    ],
+                    'visible' => Yii::$app->user->isGuest == false
+                ]
+            ]
+        ]);
+        NavBar::end();
+        ?>
+    </header>
 
-<main role="main" class="flex-shrink-0">
-    <div class="container">
-        <?= Breadcrumbs::widget([
-            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-        ]) ?>
-        <?= Alert::widget() ?>
-        <?= $content ?>
-    </div>
-</main>
+    <main role="main" class="flex-shrink-0">
+        <div class="container">
+            <?= Breadcrumbs::widget(['links' => $this->params['breadcrumbs'], 'options' => ['class' => 'breadcrumb bg-transparent p-0']]) ?>
+            <?= Alert::widget() ?>
+            <?= $content ?>
+        </div>
+    </main>
 
-<footer class="footer mt-auto py-3 text-muted">
-    <div class="container">
-        <p class="float-left">&copy; My Company <?= date('Y') ?></p>
-        <p class="float-right"><?= Yii::powered() ?></p>
-    </div>
-</footer>
+    <footer class="footer mt-auto py-3 text-muted">
+        <div class="container">
+            <p class="float-left">&copy; My Company <?= date('Y') ?></p>
+            <p class="float-right"><?= Yii::powered() ?></p>
+        </div>
+    </footer>
 
-<?php $this->endBody() ?>
+    <?php $this->endBody() ?>
 </body>
+
 </html>
 <?php $this->endPage() ?>

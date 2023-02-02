@@ -3,27 +3,30 @@
 namespace app\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\web\Response;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use app\models\LoginForm;
-use app\models\ContactForm;
+use app\models\Signin;
+use app\models\User;
+use app\models\File;
+use app\models\FileSearch;
 
 class SiteController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
     public function behaviors()
     {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['signup', 'signin', 'signout', 'profile'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['signup', 'signin'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'actions' => ['signout', 'profile'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -32,15 +35,12 @@ class SiteController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'logout' => ['post'],
+                    'signout' => ['POST'],
                 ],
             ],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function actions()
     {
         return [
@@ -54,75 +54,41 @@ class SiteController extends Controller
         ];
     }
 
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
     public function actionIndex()
     {
         return $this->render('index');
     }
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
-    public function actionLogin()
+    public function actionSignup()
     {
-        if (!Yii::$app->user->isGuest) {
+        $model = new User();
+        if ($model->load($this->request->post()) && $model->save() && Yii::$app->user->login($model, 3600 * 24 * 30)) {
             return $this->goHome();
+        } else {
+            $model->loadDefaultValues();
         }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
+        return $this->render('signup', compact('model'));
     }
 
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
-    public function actionLogout()
+    public function actionSignin()
     {
-        Yii::$app->user->logout();
+        $model = new Signin();
+        if ($model->load($this->request->post()) && $model->signin()) {
+            return $this->goHome();
+        }
+        $model->password = '';
+        return $this->render('signin', compact('model'));
+    }
 
+    public function actionSignout()
+    {
+        $this->user->logout();
         return $this->goHome();
     }
 
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
+    public function actionProfile()
     {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
+        $model = Yii::$app->user->identity;
+        return $this->render('profile', compact('model'));
     }
 }
