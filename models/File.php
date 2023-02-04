@@ -73,7 +73,7 @@ class File extends ActiveRecord
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
                 $this->user = Yii::$app->user->identity->id;
-                $this->path = Yii::$app->security->generateRandomString();
+                $this->path = Yii::$app->security->generateRandomString(64);
             }
             if ($file = UploadedFile::getInstance($this, 'file')) {
                 $this->name = $file->name;
