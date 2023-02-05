@@ -6,8 +6,8 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use app\models\Signin;
-use app\models\User;
+use app\models\SignupForm;
+use app\models\SigninForm;
 use app\models\FileSearch;
 
 class SiteController extends Controller
@@ -63,18 +63,16 @@ class SiteController extends Controller
 
     public function actionSignup()
     {
-        $model = new User();
-        if ($model->load($this->request->post()) && $model->save() && Yii::$app->user->login($model, 3600 * 24 * 30)) {
+        $model = new SignupForm();
+        if ($model->load($this->request->post()) && $model->signup()) {
             return $this->goHome();
-        } else {
-            $model->loadDefaultValues();
         }
         return $this->render('signup', compact('model'));
     }
 
     public function actionSignin()
     {
-        $model = new Signin();
+        $model = new SigninForm();
         if ($model->load($this->request->post()) && $model->signin()) {
             return $this->goHome();
         }

@@ -1,24 +1,27 @@
 <?php
 
-use yii\bootstrap4\ActiveForm;
-use yii\grid\GridView;
-use yii\helpers\Url;
-use app\models\File;
 use yii\bootstrap4\Html;
-use yii\grid\ActionColumn;
+use yii\grid\GridView;
 
 $this->title = Yii::$app->name;
 ?>
 <div class="card mb-3">
-    <h3 class="card-header">Загрузить файл</h3>
+    <div class="card-header">
+        <h3 class="m-0">Загрузить файл</h3>
+    </div>
     <div class="card-body">
-        <?php $form = ActiveForm::begin(['action' => '/file/create']); ?>
-        <?= $form->field(new File(), 'file', ['template' => "{input}\n{label}", 'options' => ['class' => 'custom-file']])->fileInput(['class' => 'custom-file-input', 'onchange' => 'this.form.submit()'])->label(null, ['class' => 'custom-file-label']) ?>
-        <?php ActiveForm::end(); ?>
+        <?= Html::beginForm(['/file/create'], 'post', ['enctype' => 'multipart/form-data']) ?>
+        <div class="custom-file">
+            <?= Html::fileInput('file', null, ['class' => 'custom-file-input', 'id' => 'file-file', 'onchange' => 'this.form.submit()']) ?>
+            <?= Html::label('Файл', 'file-file', ['class' => 'custom-file-label']) ?>
+        </div>
+        <?= Html::endForm() ?>
     </div>
 </div>
 <div class="card">
-    <h3 class="card-header">Файлы</h3>
+    <div class="card-header">
+        <h3 class="m-0">Файлы</h3>
+    </div>
     <div class="card-body">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,

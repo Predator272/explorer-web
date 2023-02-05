@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'file',
             'user',
-            'flag',
+            'rule',
             [
                 'class' => ActionColumn::className(),
                 'urlCreator' => function ($action, Access $model, $key, $index, $column) {

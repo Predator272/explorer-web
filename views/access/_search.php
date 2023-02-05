@@ -21,7 +21,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'user') ?>
 
-    <?= $form->field($model, 'flag') ?>
+    <?= $form->field($model, 'rule') ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>

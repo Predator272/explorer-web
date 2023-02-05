@@ -13,6 +13,7 @@ use yii\web\UploadedFile;
  * @property string $name Имя
  * @property int $user Владелец
  * @property string $path Путь
+ * @property string $onUpdate Дата изменения
  *
  * @property Access[] $accesses
  * @property User $user0
@@ -20,8 +21,6 @@ use yii\web\UploadedFile;
  */
 class File extends ActiveRecord
 {
-    public $file;
-
     public static function tableName()
     {
         return 'file';
@@ -32,12 +31,13 @@ class File extends ActiveRecord
         return [
             [['user'], 'integer'],
             [['onUpdate'], 'safe'],
-            [['name'], 'default', 'value' => 'unnamed'],
-            [['name'], 'trim'],
-            [['name', 'path'], 'string', 'max' => 255],
+            [['name', 'path'], 'string', 'length' => [1, 255]],
+            [['path'], 'unique'],
+            [['name', 'user'], 'unique', 'targetAttribute' => ['name', 'user']],
             [['user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user' => 'id']],
-            [['name'], 'match', 'pattern' => '/^[^\\\\\/:*?"<>|]+$/', 'message' => 'Некорректное имя файла.'],
-            [['file'], 'file'],
+
+            [['name'], 'trim'],
+            [['name'], 'match', 'pattern' => '/^[^\\\\\/:*?"<>|]+$/'],
         ];
     }
 
@@ -49,7 +49,6 @@ class File extends ActiveRecord
             'user' => 'Владелец',
             'path' => 'Путь',
             'onUpdate' => 'Дата изменения',
-            'file' => 'Файл',
         ];
     }
 
@@ -66,33 +65,6 @@ class File extends ActiveRecord
     public function getUsers()
     {
         return $this->hasMany(User::class, ['id' => 'user'])->viaTable('access', ['file' => 'id']);
-    }
-
-    public function beforeSave($insert)
-    {
-        if (parent::beforeSave($insert)) {
-            if ($this->isNewRecord) {
-                $this->user = Yii::$app->user->identity->id;
-                $this->path = Yii::$app->security->generateRandomString(64);
-            }
-            if ($file = UploadedFile::getInstance($this, 'file')) {
-                $this->name = $file->name;
-                return $file->saveAs($this->filePath);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public function beforeDelete()
-    {
-        if (parent::beforeDelete()) {
-            if (is_file($this->filePath)) {
-                unlink($this->filePath);
-            }
-            return true;
-        }
-        return false;
     }
 
     public function getFilePath()

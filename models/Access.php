@@ -3,7 +3,6 @@
 namespace app\models;
 
 use Yii;
-use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "access".
@@ -11,18 +10,24 @@ use yii\db\ActiveRecord;
  * @property int $id ID
  * @property int $file Файл
  * @property int $user Пользователь
- * @property int $rule Параметры
+ * @property int $rule Тип
  *
  * @property File $file0
  * @property User $user0
  */
-class Access extends ActiveRecord
+class Access extends \yii\db\ActiveRecord
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function tableName()
     {
         return 'access';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function rules()
     {
         return [
@@ -34,21 +39,34 @@ class Access extends ActiveRecord
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function attributeLabels()
     {
         return [
             'id' => 'ID',
             'file' => 'Файл',
             'user' => 'Пользователь',
-            'rule' => 'Параметры',
+            'rule' => 'Тип',
         ];
     }
 
+    /**
+     * Gets query for [[File0]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getFile0()
     {
         return $this->hasOne(File::class, ['id' => 'file']);
     }
 
+    /**
+     * Gets query for [[User0]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
     public function getUser0()
     {
         return $this->hasOne(User::class, ['id' => 'user']);

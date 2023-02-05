@@ -2,17 +2,16 @@
 
 namespace app\models;
 
-use Yii;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "user".
  *
- * @property int $id
- * @property string $login
- * @property string $password
- * @property string $rule
+ * @property int $id ID
+ * @property string $login Логин
+ * @property string $password Пароль
+ * @property int $rule Тип
  *
  * @property Access[] $accesses
  * @property File[] $files
@@ -29,7 +28,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             [['login', 'password'], 'required'],
-            [['rule'], 'string'],
+            [['rule'], 'integer'],
             [['login', 'password'], 'string', 'max' => 255],
             [['login'], 'unique'],
         ];
@@ -92,7 +91,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function validatePassword($password)
     {
-        return $this->password === md5($password);
+        return $this->password === md5($password);;
     }
 
     public function beforeSave($insert)

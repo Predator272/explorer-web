@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'file',
             'user',
-            'flag',
+            'rule',
         ],
     ]) ?>
 

@@ -6,12 +6,12 @@ use Yii;
 use yii\base\Model;
 
 /**
- * LoginForm is the model behind the login form.
+ * SigninForm is the model behind the signin form.
  *
  * @property-read User|null $user
  *
  */
-class Signin extends Model
+class SigninForm extends Model
 {
     public $login;
     public $password;
@@ -23,7 +23,7 @@ class Signin extends Model
     {
         return [
             [['login', 'password'], 'required'],
-            [['login', 'password'], 'string', 'max' => 255],
+            [['login', 'password'], 'string', 'length' => [4, 255]],
             ['rememberMe', 'boolean'],
             ['password', 'validatePassword'],
         ];

@@ -1,7 +1,7 @@
 <?php
 
 use yii\bootstrap4\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 
 $this->title = 'Редактировать';
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];

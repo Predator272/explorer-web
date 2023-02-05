@@ -17,7 +17,7 @@ class AccessSearch extends Access
     public function rules()
     {
         return [
-            [['id', 'file', 'user', 'flag'], 'integer'],
+            [['id', 'file', 'user', 'rule'], 'integer'],
         ];
     }
 
@@ -60,7 +60,7 @@ class AccessSearch extends Access
             'id' => $this->id,
             'file' => $this->file,
             'user' => $this->user,
-            'flag' => $this->flag,
+            'rule' => $this->rule,
         ]);
 
         return $dataProvider;

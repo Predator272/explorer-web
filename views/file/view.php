@@ -1,6 +1,7 @@
 <?php
 
 use yii\bootstrap4\Html;
+use yii\bootstrap4\Widget;
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = $this->title;

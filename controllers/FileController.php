@@ -9,8 +9,8 @@ use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 use app\models\File;
-use app\models\FileSearch;
 use app\models\AccessSearch;
+use yii\web\UploadedFile;
 
 class FileController extends Controller
 {
@@ -47,6 +47,7 @@ class FileController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
+                    'create' => ['POST'],
                     'delete' => ['POST'],
                 ],
             ],
@@ -55,15 +56,21 @@ class FileController extends Controller
 
     public function actionCreate()
     {
-        $model = new File();
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                Yii::$app->session->setFlash('success', 'Файл успешно загружен.');
+            if ($file = UploadedFile::getInstanceByName('file')) {
+                $model = new File(['name' => $file->name, 'user' => Yii::$app->user->identity->id, 'path' => Yii::$app->security->generateRandomString(64)]);
+                if ($model->validate()) {
+                    if ($file->saveAs($model->filePath) && $model->save()) {
+                        Yii::$app->session->setFlash('success', 'Файл успешно загружен.');
+                    } else {
+                        Yii::$app->session->setFlash('error', 'Неудалось загрузить файл.');
+                    }
+                } else {
+                    Yii::$app->session->setFlash('error', 'Файл с таким именем уже существует.');
+                }
             } else {
-                Yii::$app->session->setFlash('error', 'Неудалось загрузить файл.');
+                Yii::$app->session->setFlash('error', 'Выберите файл.');
             }
-        } else {
-            $model->loadDefaultValues();
         }
         return $this->redirect($this->request->referrer);
     }
@@ -85,9 +92,19 @@ class FileController extends Controller
         return $this->render('update', compact('model'));
     }
 
+    public function actionAccess($id)
+    {
+        $model = $this->findModel($id);
+        return $this->render('access', compact('model'));
+    }
+
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        if (is_file($model->filePath)) {
+            unlink($model->filePath);
+        }
+        $model->delete();
         return $this->goHome();
     }
 
