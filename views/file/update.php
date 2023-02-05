@@ -4,7 +4,6 @@ use yii\bootstrap4\Html;
 use yii\widgets\ActiveForm;
 
 $this->title = 'Редактировать';
-$this->params['breadcrumbs'][] = ['label' => 'Файлы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

@@ -9,10 +9,10 @@ class m230204_100913_access extends Migration
     public function safeUp()
     {
         $this->createTable(static::NAME, [
-            'id' => $this->bigPrimaryKey()->unsigned(),
-            'file' => $this->bigInteger()->unsigned()->notNull(),
-            'user' => $this->bigInteger()->unsigned()->notNull(),
-            'flag' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0),
+            'id' => $this->bigPrimaryKey()->unsigned()->comment('ID'),
+            'file' => $this->bigInteger()->unsigned()->notNull()->comment('Файл'),
+            'user' => $this->bigInteger()->unsigned()->notNull()->comment('Пользователь'),
+            'rule' => $this->tinyInteger()->unsigned()->notNull()->defaultValue(0)->comment('Тип'),
         ]);
 
         $this->createIndex('idx-access-file-user', static::NAME, ['file', 'user'], true);

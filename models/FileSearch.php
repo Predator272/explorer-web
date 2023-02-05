@@ -2,10 +2,9 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\File;
-use app\models\User;
 
 class FileSearch extends File
 {
@@ -16,13 +15,6 @@ class FileSearch extends File
         ];
     }
 
-    public function attributeLabels()
-    {
-        return array_merge(parent::attributeLabels(), [
-            'myFiles' => 'Мои файлы',
-        ]);
-    }
-
     public function scenarios()
     {
         return Model::scenarios();
@@ -30,22 +22,19 @@ class FileSearch extends File
 
     public function search($params)
     {
-        $query = File::find()->joinWith('user0');
+        $query = File::find()->joinWith(['user0', 'accesses'])->where(['or', ['file.user' => Yii::$app->user->identity->id], ['access.user' => Yii::$app->user->identity->id]]);
 
-        $dataProvider = new ActiveDataProvider(['query' => $query, 'sort' => ['defaultOrder' => ['name' => SORT_ASC]],]);
+        $dataProvider = new ActiveDataProvider(['query' => $query, 'sort' => ['defaultOrder' => ['name' => SORT_ASC]]]);
 
-        $dataProvider->sort->attributes['user0.login'] = [
-            'asc' => ['login' => SORT_ASC],
-            'desc' => ['login' => SORT_DESC],
-        ];
+        $dataProvider->sort->attributes['user0.login'] = ['asc' => ['login' => SORT_ASC], 'desc' => ['login' => SORT_DESC]];
 
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;
         }
 
-        $query->andFilterWhere(['like', 'name', $this->name]);
-        $query->andFilterWhere(['like', 'onUpdate', $this->onUpdate]);
-        $query->andFilterWhere(['like', 'login', $this->user]);
+        $query->andFilterWhere(['like', 'file.name', $this->name]);
+        $query->andFilterWhere(['like', 'file.onUpdate', $this->onUpdate]);
+        $query->andFilterWhere(['like', 'user.login', $this->user]);
 
         return $dataProvider;
     }

@@ -9,8 +9,8 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="row justify-content-center">
     <div class="col-md-6">
         <div class="card">
+            <h3 class="card-header"><?= Html::encode($this->title) ?></h3>
             <div class="card-body">
-                <h1 class="card-title"><?= Html::encode($this->title) ?></h1>
                 <?php $form = ActiveForm::begin(); ?>
                 <?= $form->field($model, 'login')->textInput(['autofocus' => true, 'maxlength' => true]) ?>
                 <?= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>

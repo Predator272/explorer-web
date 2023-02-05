@@ -11,7 +11,7 @@ use yii\db\ActiveRecord;
  * @property int $id ID
  * @property int $file Файл
  * @property int $user Пользователь
- * @property int $flag Параметры
+ * @property int $rule Параметры
  *
  * @property File $file0
  * @property User $user0
@@ -27,7 +27,7 @@ class Access extends ActiveRecord
     {
         return [
             [['file', 'user'], 'required'],
-            [['file', 'user', 'flag'], 'integer'],
+            [['file', 'user', 'rule'], 'integer'],
             [['file', 'user'], 'unique', 'targetAttribute' => ['file', 'user']],
             [['file'], 'exist', 'skipOnError' => true, 'targetClass' => File::class, 'targetAttribute' => ['file' => 'id']],
             [['user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user' => 'id']],
@@ -40,7 +40,7 @@ class Access extends ActiveRecord
             'id' => 'ID',
             'file' => 'Файл',
             'user' => 'Пользователь',
-            'flag' => 'Параметры',
+            'rule' => 'Параметры',
         ];
     }
 

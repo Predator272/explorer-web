@@ -53,21 +53,12 @@ class FileController extends Controller
         ];
     }
 
-    public function actionIndex()
-    {
-        $searchModel = new FileSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $dataProvider->pagination->pageSize = 10;
-        return $this->render('index', compact('searchModel', 'dataProvider'));
-    }
-
     public function actionCreate()
     {
         $model = new File();
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 Yii::$app->session->setFlash('success', 'Файл успешно загружен.');
-                return $this->redirect(['view', 'id' => $model->id]);
             } else {
                 Yii::$app->session->setFlash('error', 'Неудалось загрузить файл.');
             }
@@ -97,7 +88,7 @@ class FileController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-        return $this->redirect(['index']);
+        return $this->goHome();
     }
 
     public function actionDownload($id)

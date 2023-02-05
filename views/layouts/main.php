@@ -59,7 +59,7 @@ AppAsset::register($this);
 
     <main role="main" class="flex-shrink-0">
         <div class="container">
-            <?= Breadcrumbs::widget(['links' => $this->params['breadcrumbs'], 'options' => ['class' => 'breadcrumb bg-transparent p-0']]) ?>
+            <?= Breadcrumbs::widget(['links' => $this->params['breadcrumbs'], 'options' => ['class' => 'bg-transparent p-0']]) ?>
             <?= Alert::widget() ?>
             <?= $content ?>
         </div>

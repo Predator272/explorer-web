@@ -48,8 +48,8 @@ class File extends ActiveRecord
             'name' => 'Имя',
             'user' => 'Владелец',
             'path' => 'Путь',
-            'file' => 'Загрузить файл',
             'onUpdate' => 'Дата изменения',
+            'file' => 'Файл',
         ];
     }
 
@@ -102,6 +102,11 @@ class File extends ActiveRecord
             mkdir($alias);
         }
         return $alias . '/' . $this->path;
+    }
+
+    public function getCanView()
+    {
+        return !Yii::$app->user->isGuest && (Yii::$app->user->identity->id === $this->user || Yii::$app->user->identity->isAdmin);
     }
 
     public function getCanUpdate()

@@ -8,7 +8,6 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use app\models\Signin;
 use app\models\User;
-use app\models\File;
 use app\models\FileSearch;
 
 class SiteController extends Controller
@@ -18,7 +17,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['signup', 'signin', 'signout', 'profile'],
+                'only' => ['index', 'signup', 'signin', 'signout', 'profile'],
                 'rules' => [
                     [
                         'actions' => ['signup', 'signin'],
@@ -26,7 +25,7 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['signout', 'profile'],
+                        'actions' => ['index', 'signout', 'profile'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -56,7 +55,10 @@ class SiteController extends Controller
 
     public function actionIndex()
     {
-        return $this->render('index');
+        $searchModel = new FileSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider->pagination->pageSize = 10;
+        return $this->render('index', compact('searchModel', 'dataProvider'));
     }
 
     public function actionSignup()
