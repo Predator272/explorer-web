@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "access".
@@ -15,33 +16,25 @@ use Yii;
  * @property File $file0
  * @property User $user0
  */
-class Access extends \yii\db\ActiveRecord
+class Access extends ActiveRecord
 {
-    /**
-     * {@inheritdoc}
-     */
     public static function tableName()
     {
         return 'access';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
             [['file', 'user'], 'required'],
             [['file', 'user', 'rule'], 'integer'],
-            [['file', 'user'], 'unique', 'targetAttribute' => ['file', 'user']],
+            [['user'], 'unique', 'targetAttribute' => ['file', 'user'], 'message' => 'Правило для этого пользователя уже существует.'],
             [['file'], 'exist', 'skipOnError' => true, 'targetClass' => File::class, 'targetAttribute' => ['file' => 'id']],
             [['user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user' => 'id']],
+            [['user'], 'compare', 'compareValue' => $this->file0->user, 'operator' => '!==', 'message' => 'Нельзя создать правило для владельца файла.'],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function attributeLabels()
     {
         return [
@@ -52,23 +45,27 @@ class Access extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * Gets query for [[File0]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
     public function getFile0()
     {
         return $this->hasOne(File::class, ['id' => 'file']);
     }
 
-    /**
-     * Gets query for [[User0]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
     public function getUser0()
     {
         return $this->hasOne(User::class, ['id' => 'user']);
+    }
+
+    public static function getRules()
+    {
+        return [
+            'Чтение',
+            'Чтение и запись',
+            'Полный доступ',
+        ];
+    }
+
+    public function getRuleText()
+    {
+        return $this->rules[$this->rule];
     }
 }

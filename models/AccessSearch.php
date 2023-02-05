@@ -4,64 +4,39 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Access;
 
 /**
  * AccessSearch represents the model behind the search form of `app\models\Access`.
  */
 class AccessSearch extends Access
 {
-    /**
-     * {@inheritdoc}
-     */
     public function rules()
     {
         return [
-            [['id', 'file', 'user', 'rule'], 'integer'],
+            [['user'], 'string'],
+            [['file', 'rule'], 'integer'],
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function scenarios()
     {
-        // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
 
-    /**
-     * Creates data provider instance with search query applied
-     *
-     * @param array $params
-     *
-     * @return ActiveDataProvider
-     */
     public function search($params)
     {
-        $query = Access::find();
+        $query = Access::find()->joinWith(['file0', 'user0'])->where(['file.id' => $this->file]);
 
-        // add conditions that should always apply here
+        $dataProvider = new ActiveDataProvider(['query' => $query, 'sort' => ['defaultOrder' => ['user0.login' => SORT_ASC]]]);
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
+        $dataProvider->sort->attributes['user0.login'] = ['asc' => ['login' => SORT_ASC], 'desc' => ['login' => SORT_DESC]];
 
-        $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
+        if (!($this->load($params) && $this->validate())) {
             return $dataProvider;
         }
 
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-            'file' => $this->file,
-            'user' => $this->user,
-            'rule' => $this->rule,
-        ]);
+        $query->andFilterWhere(['like', 'user.login', $this->user]);
+        $query->andFilterWhere(['access.rule' => $this->rule]);
 
         return $dataProvider;
     }
