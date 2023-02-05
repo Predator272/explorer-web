@@ -31,8 +31,7 @@ class File extends ActiveRecord
         return [
             [['user'], 'integer'],
             [['onUpdate'], 'safe'],
-            [['name', 'path'], 'string', 'length' => [1, 255]],
-            [['path'], 'unique'],
+            [['name'], 'string', 'length' => [1, 255]],
             [['name', 'user'], 'unique', 'targetAttribute' => ['name', 'user']],
             [['user'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user' => 'id']],
 
@@ -47,7 +46,6 @@ class File extends ActiveRecord
             'id' => 'ID',
             'name' => 'Имя',
             'user' => 'Владелец',
-            'path' => 'Путь',
             'onUpdate' => 'Дата изменения',
         ];
     }
@@ -73,7 +71,7 @@ class File extends ActiveRecord
         if (!is_dir($alias)) {
             mkdir($alias);
         }
-        return $alias . '/' . $this->path;
+        return "$alias/$this->id";
     }
 
     public function getCanView()

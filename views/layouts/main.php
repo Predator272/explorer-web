@@ -34,7 +34,7 @@ AppAsset::register($this);
             'brandUrl' => Yii::$app->homeUrl,
             'brandOptions' => ['class' => 'd-flex align-items-center'],
             'options' => [
-                'class' => 'navbar navbar-expand-md navbar-light bg-white border-bottom fixed-top',
+                'class' => 'navbar navbar-expand-md navbar-light bg-light fixed-top',
             ],
         ]);
         echo Nav::widget([

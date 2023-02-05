@@ -12,7 +12,6 @@ class m230204_092923_file extends Migration
             'id' => $this->bigPrimaryKey()->unsigned()->comment('ID'),
             'name' => $this->string(255)->notNull()->comment('Имя'),
             'user' => $this->bigInteger()->unsigned()->notNull()->comment('Владелец'),
-            'path' => $this->string(255)->notNull()->unique()->comment('Путь'),
             'onUpdate' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP')->append('ON UPDATE CURRENT_TIMESTAMP')->comment('Дата изменения'),
         ]);
 

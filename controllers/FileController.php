@@ -58,9 +58,9 @@ class FileController extends Controller
     {
         if ($this->request->isPost) {
             if ($file = UploadedFile::getInstanceByName('file')) {
-                $model = new File(['name' => $file->name, 'user' => Yii::$app->user->identity->id, 'path' => Yii::$app->security->generateRandomString(64)]);
+                $model = new File(['name' => $file->name, 'user' => Yii::$app->user->identity->id]);
                 if ($model->validate()) {
-                    if ($file->saveAs($model->filePath) && $model->save()) {
+                    if ($model->save() && $file->saveAs($model->filePath)) {
                         Yii::$app->session->setFlash('success', 'Файл успешно загружен.');
                     } else {
                         Yii::$app->session->setFlash('error', 'Неудалось загрузить файл.');
