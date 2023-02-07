@@ -2,103 +2,111 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+
+/**
+ * This is the model class for table "user".
+ *
+ * @property int $id ID
+ * @property string $login Логин
+ * @property string $password Пароль
+ * @property int $rule Тип
+ *
+ * @property Access[] $accesses
+ * @property File[] $files
+ * @property File[] $files0
+ */
+class User extends ActiveRecord implements IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
+    public static function tableName()
+    {
+        return 'user';
+    }
 
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
+    public function rules()
+    {
+        return [
+            [['login', 'password'], 'required'],
+            [['rule'], 'integer'],
+            [['login', 'password'], 'string', 'max' => 255],
+            [['login'], 'unique'],
+        ];
+    }
 
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'login' => 'Логин',
+            'password' => 'Пароль',
+            'rule' => 'Тип',
+        ];
+    }
 
-    /**
-     * {@inheritdoc}
-     */
+    public function getAccesses()
+    {
+        return $this->hasMany(Access::class, ['user' => 'id']);
+    }
+
+    public function getFiles()
+    {
+        return $this->hasMany(File::class, ['user' => 'id']);
+    }
+
+    public function getFiles0()
+    {
+        return $this->hasMany(File::class, ['id' => 'file'])->viaTable('access', ['user' => 'id']);
+    }
+
+    public static function findByLogin($login)
+    {
+        return static::findOne(['login' => $login]);
+    }
+
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return static::findOne($id);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
         return null;
     }
 
-    /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
-     */
-    public static function findByUsername($username)
-    {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getAuthKey()
     {
-        return $this->authKey;
+        return null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function validateAuthKey($authKey)
     {
-        return $this->authKey === $authKey;
+        return null;
     }
 
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        return $this->password === md5($password);;
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->validatePassword($this->password) === false) {
+                $this->password = md5($this->password);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function getIsAdmin()
+    {
+        return $this->rule === 1;
     }
 }
