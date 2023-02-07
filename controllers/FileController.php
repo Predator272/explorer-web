@@ -42,6 +42,9 @@ class FileController extends Controller
     public function actionIndex($id)
     {
         $model = $this->findModel($id);
+        if (!$model->canView) {
+            throw new ForbiddenHttpException('Вам не разрешено производить данное действие.');
+        }
         $searchModel = new AccessSearch(['file' => $model->id]);
         $dataProvider = $searchModel->search($this->request->queryParams);
         if ($this->request->isPost) {

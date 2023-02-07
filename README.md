@@ -7,7 +7,6 @@ at [getcomposer.org](http://getcomposer.org/doc/00-intro.md#installation-nix).
 You can then install this project using the following command:
 
 ~~~
-git clone https://github.com/predator272/explorer-web
 composer install
 yii migrate
 ~~~

@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "file".
@@ -73,18 +74,29 @@ class File extends ActiveRecord
         return "$alias/$this->id";
     }
 
+    public function getAllowedUsers()
+    {
+        return ArrayHelper::map(ArrayHelper::toArray($this->accesses, [Access::class => ['user', 'rule']]), 'user', 'rule');
+    }
+
     public function getCanView()
     {
-        return !Yii::$app->user->isGuest && (Yii::$app->user->identity->id === $this->user || Yii::$app->user->identity->isAdmin);
+        $allow = ArrayHelper::keyExists(Yii::$app->user->identity->id, $this->allowedUsers) && $this->allowedUsers[Yii::$app->user->identity->id] >= 0;
+
+        return !Yii::$app->user->isGuest && (Yii::$app->user->identity->id === $this->user || Yii::$app->user->identity->isAdmin || $allow);
     }
 
     public function getCanUpdate()
     {
-        return !Yii::$app->user->isGuest && (Yii::$app->user->identity->id === $this->user || Yii::$app->user->identity->isAdmin);
+        $allow = ArrayHelper::keyExists(Yii::$app->user->identity->id, $this->allowedUsers) && $this->allowedUsers[Yii::$app->user->identity->id] >= 1;
+
+        return !Yii::$app->user->isGuest && (Yii::$app->user->identity->id === $this->user || Yii::$app->user->identity->isAdmin || $allow);
     }
 
     public function getCanDelete()
     {
-        return !Yii::$app->user->isGuest && (Yii::$app->user->identity->id === $this->user || Yii::$app->user->identity->isAdmin);
+        $allow = ArrayHelper::keyExists(Yii::$app->user->identity->id, $this->allowedUsers) && $this->allowedUsers[Yii::$app->user->identity->id] >= 2;
+
+        return !Yii::$app->user->isGuest && (Yii::$app->user->identity->id === $this->user || Yii::$app->user->identity->isAdmin || $allow);
     }
 }
